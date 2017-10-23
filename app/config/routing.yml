@@ -1,0 +1,3 @@
+yz_quaderno_reports:
+    resource: "@YZQuadernoReportsBundle/Resources/config/routing.yml"
+    prefix:   /

@@ -1,0 +1,4 @@
+services:
+#    yz_quaderno_reports.example:
+#        class: YZubizarreta\QuadernoReportsBundle\Example
+#        arguments: ["@service_id", "plain_value", "%parameter%"]

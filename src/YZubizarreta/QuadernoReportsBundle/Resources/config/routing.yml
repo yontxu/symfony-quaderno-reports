@@ -1,0 +1,3 @@
+yz_quaderno_reports_homepage:
+    path:     /
+    defaults: { _controller: YZQuadernoReportsBundle:Default:index }

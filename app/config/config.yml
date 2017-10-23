@@ -45,3 +45,10 @@ swiftmailer:
     username: '%mailer_user%'
     password: '%mailer_password%'
     spool: { type: memory }
+
+yz_quaderno_reports:
+    api:
+        private_key: '%quaderno.live.private_key%'
+        public_key: '%quaderno.live.public_key%'
+        api_url: '%quaderno.live.api_url%'
+        version: '%quaderno.api_version%'
