@@ -12,11 +12,10 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use QuadernoBase;
 use QuadernoInvoice;
 
-class RetrieveProductsCommand extends ContainerAwareCommand
+class RetrieveProductsCommand extends AbstractQuadernoReportsCommand
 {
 
     protected function configure()
@@ -88,50 +87,13 @@ class RetrieveProductsCommand extends ContainerAwareCommand
                 $i++;
             }
 
-            $csv_content = array();
-            foreach($invoices_total as $date => $items){
-                $csv_body = array();
-                foreach($csv_header as $ref ){
-
-                    if(array_key_exists($ref, $items)){
-                        $csv_body[] = $items[$ref];
-                    }else{
-                        $csv_body[] = 0;
-                    }
-
-                }
-                $csv_body[] = array_sum($csv_body);
-                array_unshift($csv_body, $date);
-                $csv_content[] = $csv_body;
-            }
-
+            $csv_content = $this->createCsvBody($invoices_total, $csv_header);
             array_unshift($csv_header, 'date');
             $csv_header[]='total';
 
-            array_unshift($csv_content, $csv_header);
+            $csv_output = $this->createCsvFile($csv_content, $csv_header);
 
-            $csv = fopen('php://temp/maxmemory:'. (5*1024*1024), 'r+');
-
-            foreach ($csv_content as $row) {
-                fputcsv($csv, $row);
-            }
-
-            rewind($csv);
-
-            $csv_output = stream_get_contents($csv);
-
-            $mail = \Swift_Message::newInstance()
-                    ->setSubject('test')
-                    ->setFrom('info@panaderiazubizarreta.com')
-                    ->setTo('yonzubi@gmail.com')
-                    ->setBody('Sales report ready to go!!')
-                    ->attach(
-                             \Swift_Attachment::newInstance($csv_output)
-                               ->setFilename('sales_report.csv')
-                               ->setContentType('application/csv')
-                            );
-
-            if ($this->getContainer()->get('mailer')->send($mail)) {
+            if ($this->sendEmail($csv_output)) {
                 $output->writeln('Email sent successfully Success!');
             } else {
                 $output->writeln('There was an error sending the email');
