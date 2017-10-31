@@ -13,16 +13,16 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 abstract class AbstractQuadernoReportsCommand extends ContainerAwareCommand
 {
 
-    public function sendEmail($output)
+    public function sendEmail($email_from, $email_to, $subject, $body, $file_name, $attachment)
     {
         $mail = \Swift_Message::newInstance()
-                ->setSubject('test')
-                ->setFrom('info@panaderiazubizarreta.com')
-                ->setTo('yonzubi@gmail.com')
-                ->setBody('Sales report ready to go!!')
+                ->setFrom($email_from)
+                ->setTo($email_to)
+                ->setSubject($subject)
+                ->setBody($body)
                 ->attach(
-                         \Swift_Attachment::newInstance($output)
-                           ->setFilename('sales_report.csv')
+                         \Swift_Attachment::newInstance($attachment)
+                           ->setFilename($file_name)
                            ->setContentType('application/csv')
                         );
 

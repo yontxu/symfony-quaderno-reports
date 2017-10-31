@@ -34,6 +34,12 @@ class Configuration implements ConfigurationInterface
                                 ->variableNode('version')->end()
                             ->end()
                         ->end()
+                        ->arrayNode('email')
+                            ->children()
+                                ->variableNode('from')->end()
+                                ->variableNode('to')->end()
+                            ->end()
+                        ->end()
                     ->end()
                 ;
 

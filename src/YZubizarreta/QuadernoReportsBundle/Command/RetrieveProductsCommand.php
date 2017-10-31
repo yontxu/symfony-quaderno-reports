@@ -46,12 +46,15 @@ class RetrieveProductsCommand extends AbstractQuadernoReportsCommand
         $output->getFormatter()->setStyle('notice', new OutputFormatterStyle('red', 'yellow'));
 
         $config = $this->getContainer()->getParameter('yz_quaderno_reports.config');
-
         QuadernoBase::init($config['api']['private_key'], $config['api']['api_url']);
         $response = QuadernoBase::ping();
         if($response){
             $from = $input->getOption('from');
             $to = $input->getOption('to');
+            $email_from = $config['email']['from'];
+            $email_to = $config['email']['to'];
+            $report_name = 'sales_report_'.$from.'-'.$to.'.csv';
+            $email_subject = 'Sales Report: ['.$from.'] to ['. $to . ']';
             $output->writeln(
                 sprintf(
                     'Retrieving invoices from [%s] to [%s]',
@@ -93,9 +96,17 @@ class RetrieveProductsCommand extends AbstractQuadernoReportsCommand
 
             $csv_output = $this->createCsvFile($csv_content, $csv_header);
 
-            if ($this->sendEmail($csv_output)) {
+            if ($this->sendEmail(
+                $email_from,
+                $email_to,
+                $email_subject,
+                'New report ready to go!!',
+                $report_name,
+                $csv_output
+                )
+            ){
                 $output->writeln('Email sent successfully Success!');
-            } else {
+            }else{
                 $output->writeln('There was an error sending the email');
             }
 

@@ -52,3 +52,6 @@ yz_quaderno_reports:
         public_key: '%quaderno.live.public_key%'
         api_url: '%quaderno.live.api_url%'
         version: '%quaderno.api_version%'
+    email:
+        from: '%quaderno.email.from%'
+        to: '%quaderno.email.to%'
