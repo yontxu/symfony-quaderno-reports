@@ -1,4 +1,8 @@
 services:
-#    yz_quaderno_reports.example:
-#        class: YZubizarreta\QuadernoReportsBundle\Example
-#        arguments: ["@service_id", "plain_value", "%parameter%"]
+    YZubizarreta\QuadernoReportsBundle\:
+        resource: '../../*'
+        exclude: '../../{Entity,Repository,Tests}'
+    YZubizarreta\QuadernoReportsBundle\Adapter\Quaderno:
+        arguments:
+            $config: '%yz_quaderno_reports.config%'
+        public: true
