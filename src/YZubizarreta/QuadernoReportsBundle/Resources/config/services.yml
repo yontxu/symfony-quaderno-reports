@@ -1,8 +1,14 @@
 services:
     YZubizarreta\QuadernoReportsBundle\:
         resource: '../../*'
-        exclude: '../../{Entity,Repository,Tests}'
+        exclude: '../../{Entity,Tests}'
     YZubizarreta\QuadernoReportsBundle\Adapter\Quaderno:
         arguments:
-            $config: '%yz_quaderno_reports.config%'
+            $configuration: '%yz_quaderno_reports.config%'
+        public: true
+    YZubizarreta\QuadernoReportsBundle\Command\RetrieveProductsCommand:
+        arguments:
+            $api_reports: YZubizarreta\QuadernoReportsBundle\Adapter\Quaderno
+            $configuration: '%yz_quaderno_reports.config%'
+            $mailer: Swift_Mailer
         public: true

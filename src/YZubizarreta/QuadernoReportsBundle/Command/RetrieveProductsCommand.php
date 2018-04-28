@@ -12,16 +12,40 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
-use QuadernoBase;
-use QuadernoInvoice;
+use YZubizarreta\QuadernoReportsBundle\Adapter\ApiReportsInterface;
 
 class RetrieveProductsCommand extends AbstractQuadernoReportsCommand
 {
 
+    /**
+     * @var \YZubizarreta\QuadernoReportsBundle\Adapter\ApiReportsInterface
+     */
+    private $api_reports;
+
+    /*
+     * Quaderno configuration
+     *
+     * @var array
+     */
+    protected $configuration;
+
+    public function __construct(
+        ApiReportsInterface $api_reports,
+        array $configuration,
+        \Swift_Mailer $mailer,
+        string $name = null
+    )
+    {
+        parent::__construct($mailer, $name);
+
+        $this->api_reports = $api_reports;
+        $this->configuration = $configuration;
+    }
+
     protected function configure()
     {
         $this
-                ->setName('quaderno:retrieve-products')
+                ->setName('quaderno-reports:invoices:retrieve-line-items')
 
                 ->setDescription('Retrieve Products by date range.')
 
@@ -45,14 +69,12 @@ class RetrieveProductsCommand extends AbstractQuadernoReportsCommand
     {
         $output->getFormatter()->setStyle('notice', new OutputFormatterStyle('red', 'yellow'));
 
-        $config = $this->getContainer()->getParameter('yz_quaderno_reports.config');
-        QuadernoBase::init($config['api']['private_key'], $config['api']['api_url']);
-        $response = QuadernoBase::ping();
-        if($response){
+        //$config = array();//$this->getContainer()->getParameter('yz_quaderno_reports.config');
+        if($this->api_reports->connect()){
             $from = $input->getOption('from');
             $to = $input->getOption('to');
-            $email_from = $config['email']['from'];
-            $email_to = $config['email']['to'];
+            $email_from = $this->configuration['email']['from'];
+            $email_to = $this->configuration['email']['to'];
             $report_name = 'sales_report_'.$from.'-'.$to.'.csv';
             $email_subject = 'Sales Report: ['.$from.'] to ['. $to . ']';
             $output->writeln(
@@ -66,8 +88,8 @@ class RetrieveProductsCommand extends AbstractQuadernoReportsCommand
             $invoices_total = array();
             $csv_header = array();
 
-            $i = 1;
-            while($invoices = QuadernoInvoice::find(array( 'date' => $from.','.$to, 'page' => $i))){
+            $invoices = $this->api_reports->getInvoicesByDate($from, $to);
+            for($i = 0; $i < count($invoices); $i++){
                 $output->writeln(
                     sprintf(
                         'Found [%s] Invoices',
@@ -87,7 +109,6 @@ class RetrieveProductsCommand extends AbstractQuadernoReportsCommand
 
                     }
                 }
-                $i++;
             }
 
             $csv_content = $this->createCsvBody($invoices_total, $csv_header);

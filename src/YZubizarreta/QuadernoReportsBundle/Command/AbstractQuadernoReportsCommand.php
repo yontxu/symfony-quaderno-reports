@@ -8,10 +8,22 @@
 
 namespace YZubizarreta\QuadernoReportsBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 
-abstract class AbstractQuadernoReportsCommand extends ContainerAwareCommand
+abstract class AbstractQuadernoReportsCommand extends Command
 {
+
+    /*
+     * @var @mailer
+     */
+    protected $mailer;
+
+    public function __construct($mailer, string $name = null)
+    {
+        parent::__construct($name);
+        $this->mailer = $mailer;
+    }
+
 
     public function sendEmail($email_from, $email_to, $subject, $body, $file_name, $attachment)
     {
@@ -26,7 +38,7 @@ abstract class AbstractQuadernoReportsCommand extends ContainerAwareCommand
                            ->setContentType('application/csv')
                         );
 
-        return $this->getContainer()->get('mailer')->send($mail);
+        return $this->mailer->send($mail);
     }
 
     public function createCsvBody($content, $header){
