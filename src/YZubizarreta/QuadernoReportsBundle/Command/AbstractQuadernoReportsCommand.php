@@ -18,10 +18,11 @@ abstract class AbstractQuadernoReportsCommand extends Command
      */
     protected $mailer;
 
-    public function __construct($mailer, string $name = null)
+    public function __construct($mailer)
     {
-        parent::__construct($name);
         $this->mailer = $mailer;
+
+        parent::__construct();
     }
 
 

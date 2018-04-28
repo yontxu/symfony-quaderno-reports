@@ -32,14 +32,14 @@ class RetrieveProductsCommand extends AbstractQuadernoReportsCommand
     public function __construct(
         ApiReportsInterface $api_reports,
         array $configuration,
-        \Swift_Mailer $mailer,
-        string $name = null
+        \Swift_Mailer $mailer
     )
     {
-        parent::__construct($mailer, $name);
 
         $this->api_reports = $api_reports;
         $this->configuration = $configuration;
+
+        parent::__construct($mailer);
     }
 
     protected function configure()
@@ -47,22 +47,21 @@ class RetrieveProductsCommand extends AbstractQuadernoReportsCommand
         $this
                 ->setName('quaderno-reports:invoices:retrieve-line-items')
 
-                ->setDescription('Retrieve Products by date range.')
+            ->setDescription('Retrieve Products by date range.')
 
-                ->setHelp('This command allows you to retrieve products by a given date range.')
-                ->addOption(
-                    'from',
-                    null,
-                    InputOption::VALUE_REQUIRED,
-                    'Start date of report range.'
-                )
-                ->addOption(
-                    'to',
-                    null,
-                    InputOption::VALUE_OPTIONAL,
-                    'End date of report range.'
-                )
-            ;
+            ->setHelp('This command allows you to retrieve products by a given date range.')
+            ->addOption(
+                'from',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Start date of report range.'
+            )
+            ->addOption(
+                'to',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'End date of report range.'
+            );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -89,13 +88,15 @@ class RetrieveProductsCommand extends AbstractQuadernoReportsCommand
             $csv_header = array();
 
             $invoices = $this->api_reports->getInvoicesByDate($from, $to);
+
+            $output->writeln(
+                sprintf(
+                    'Found [%s] Invoices',
+                    count($invoices)
+                )
+            );
+
             for($i = 0; $i < count($invoices); $i++){
-                $output->writeln(
-                    sprintf(
-                        'Found [%s] Invoices',
-                        count($invoices)
-                    )
-                );
                 foreach($invoices as $invoice){
 
                     foreach($invoice->items as $item){

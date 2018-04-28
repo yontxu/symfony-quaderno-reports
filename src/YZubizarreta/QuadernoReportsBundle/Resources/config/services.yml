@@ -8,7 +8,8 @@ services:
         public: true
     YZubizarreta\QuadernoReportsBundle\Command\RetrieveProductsCommand:
         arguments:
-            $api_reports: YZubizarreta\QuadernoReportsBundle\Adapter\Quaderno
+            $api_reports: '@YZubizarreta\QuadernoReportsBundle\Adapter\Quaderno'
             $configuration: '%yz_quaderno_reports.config%'
-            $mailer: Swift_Mailer
+            $mailer: '@Swift_Mailer'
         public: true
+        tags: ['console.command']
