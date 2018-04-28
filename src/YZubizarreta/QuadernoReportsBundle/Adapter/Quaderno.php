@@ -24,10 +24,10 @@ class Quaderno implements ApiReportsInterface
     /**
      * @throws \Exception
      */
-    public function __construct(array $config)
+    public function __construct(array $configuration)
     {
-        $this->validateConfiguration($config);
-        $this->_configuration = $config;
+        $this->validateConfiguration($configuration);
+        $this->_configuration = $configuration;
     }
 
     /**
@@ -35,9 +35,6 @@ class Quaderno implements ApiReportsInterface
      */
     public function getConfiguration():array
     {
-        if(is_null($this->_configuration))
-            throw new \Exception('Empty configuration');
-
         return $this->_configuration;
     }
 

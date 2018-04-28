@@ -3,7 +3,7 @@ namespace YZubizarreta\QuadernoReportsBundle\Adapter;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
-class QuadernoAdapterTest extends KernelTestCase
+class QuadernoTest extends KernelTestCase
 {
     protected $quaderno;
 
