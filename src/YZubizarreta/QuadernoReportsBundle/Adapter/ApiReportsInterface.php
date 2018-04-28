@@ -9,6 +9,8 @@
 namespace YZubizarreta\QuadernoReportsBundle\Adapter;
 
 
+use Symfony\Component\Config\Definition\Exception\Exception;
+
 interface ApiReportsInterface
 {
 
@@ -16,15 +18,17 @@ interface ApiReportsInterface
      * returns current configuration
      *
      * @return array
+     * @throws \Symfony\Component\Config\Definition\Exception\Exception
      */
-    public function getConfiguration();
+    public function getConfiguration():array;
 
     /**
      * returns current page and total number of pages, like [10, 100] is page 10 of 100
      *
      * @return bool
+     * @throws \Exception
      */
-    public function connect();
+    public function connect():bool;
 
     /**
      * returns current invoices in the given date range
@@ -33,5 +37,5 @@ interface ApiReportsInterface
      * @param $to
      * @return array []
      */
-    public function retrieveInvoicesByDate($from, $to=null);
+    public function getInvoicesByDate($from, $to=null);
 }
