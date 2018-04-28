@@ -21,30 +21,60 @@ class Quaderno implements ApiReportsInterface
      */
     protected $_configuration;
 
+    /**
+     * @throws \Exception
+     */
     public function __construct(array $config)
     {
+        $this->validateConfiguration($config);
         $this->_configuration = $config;
     }
 
     /**
      * @inheritdoc
      */
-    public function getConfiguration()
+    public function getConfiguration():array
     {
-        if(is_null($this->_configuration)){
-            throw new Exception('Empty configuration');
-        }
+        if(is_null($this->_configuration))
+            throw new \Exception('Empty configuration');
+
         return $this->_configuration;
-        // TODO: Implement getConfiguration() method.
     }
 
-    public function connect()
+    /**
+     * @inheritdoc
+     */
+    public function connect():bool
     {
-        // TODO: Implement connect() method.
+        $config = $this->getConfiguration();
+        QuadernoBase::init($config['api']['private_key'], $config['api']['api_url']);
+        $response = QuadernoBase::ping();
+        if(!$response)
+            throw new \Exception('Unable to connect');
+        return $response;
+
     }
 
-    public function retrieveInvoicesByDate($from, $to = null)
+    public function getInvoicesByDate($from, $to = null)
     {
-        // TODO: Implement retrieveInvoicesByDate() method.
+        $i = 1;
+        $invoices = array();
+        while($pageInvoice = QuadernoInvoice::find(array( 'date' => $from.','.$to, 'page' => $i))){
+            $invoices = array_merge($invoices, $pageInvoice);
+            $i++;
+        }
+        return $invoices;
+    }
+
+    /**
+     * Validates the configuration format
+     * @param $config
+     * @throws \Exception
+     */
+    private function validateConfiguration($config):void
+    {
+        if(!array_key_exists('api', $config) ||
+            count(array_diff(['private_key', 'public_key', 'api_url', 'version'], array_keys($config['api']))) > 0)
+                throw new \Exception('Wrong configuration given');
     }
 }
